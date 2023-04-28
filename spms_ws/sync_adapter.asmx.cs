@@ -1128,7 +1128,7 @@ namespace spms_ws
             public int ppa_id { get; set; }
             public int activity_id { get; set; }
             public int accomplishment { get; set; }
-            public int date_time { get; set; }
+            public string date_time { get; set; }
             public int is_other_funds { get; set; }
             public int ppa_year { get; set; }
         }
