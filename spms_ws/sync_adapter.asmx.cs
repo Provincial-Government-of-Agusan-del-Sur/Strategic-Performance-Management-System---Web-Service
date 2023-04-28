@@ -920,7 +920,7 @@ namespace spms_ws
              
             try
             {
-                string uname = username + "@pgas.gov";
+                string uname = username + "@pgas.ph";
                 int eid = 0;
                 string passcode = "";
                 string emailaddress = "";
