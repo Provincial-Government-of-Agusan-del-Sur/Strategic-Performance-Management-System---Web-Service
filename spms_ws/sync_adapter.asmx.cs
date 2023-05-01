@@ -165,8 +165,8 @@ namespace spms_ws
         }
          
         [System.Web.Services.WebMethod()]
-        //public string SubTask_Receiver(string SQLITE_DATA, string SQLITE_PROOF,string SQLITE_MULTI_TASK, int EID)
-            public string SubTask_Receiver(string SQLITE_DATA, string SQLITE_PROOF, string SQLITE_MULTI_TASK, int EID)
+        
+        public string SubTask_Receiver(string SQLITE_DATA, string SQLITE_PROOF, string SQLITE_MULTI_TASK, int EID)
         {
              
             string Return_msg = "";
@@ -217,6 +217,7 @@ namespace spms_ws
                 dt.Columns.Add("privacy");
                 dt.Columns.Add("IsTravel");
                 dt.Columns.Add("ControlNoID");
+                dt.Columns.Add("isppa");
                 dt.Columns.Add("ppa_id");
                 dt.Columns.Add("activity_id");
                 dt.Columns.Add("accomplishment");
@@ -229,7 +230,7 @@ namespace spms_ws
                 {
                     dt.Rows.Add(s.id, s.subtask_id, s.task_id, s.project_id, s.description, s.start_date, s.end_date, s.start_time, s.end_time, EID, s.is_done
                         , s.is_verified, s.updated_on, s.actual_start_date, s.actual_end_date, s.actual_start_time, s.actual_end_time, s.start_date_time, s.end_date_time, s.target_accomplished,s.isalarm,s.alarm_option_id,s.output,s.action_code,s.privacy,s.IsTravel,s.ControlNoID
-                        , s.ppa_id, s.activity_id, s.accomplishment, s.date_time, s.is_other_funds, s.ppa_year);
+                        , s.isppa, s.ppa_id, s.activity_id, s.accomplishment, s.date_time, s.is_other_funds, s.ppa_year);
                     if (s.subtask_id == 0)
                     {
                         with_subtaskid = false;
@@ -425,6 +426,7 @@ namespace spms_ws
                     var privacy = row["privacy"].ToString();
                     var IsTravel = row["IsTravel"].ToString();
                     var ControlNoID = row["ControlNoID"].ToString();
+                    var isppa = row["isppa"].ToString();
                     var ppa_id = row["ppa_id"].ToString();
                     var activity_id = row["activity_id"].ToString();
                     var accomplishment = row["accomplishment"].ToString();
@@ -472,14 +474,22 @@ namespace spms_ws
                     int s_id = (QRY).Scalar();
                     si = s_id;
 
-                        try {
-                            ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "')").NonQuery();
+                        if (isppa == "1")
+                        {
+                            try
+                            {
+                                ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "')").NonQuery();
 
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
                         }
-                        catch (Exception ex )
-                        { 
-                        
-                        }
+                        else
+                        {
+
+                        }  
                         
 
                     foreach (DataRow r in multi_task.Rows)
@@ -868,8 +878,15 @@ namespace spms_ws
                     var output = row["output"].ToString();
                     var action_code = row["action_code"].ToString();
                     var privacy = row["privacy"].ToString();
+                    var isppa = row["isppa"].ToString();
+                    var ppa_id = row["ppa_id"].ToString();
+                    var activity_id = row["activity_id"].ToString();
+                    var accomplishment = row["accomplishment"].ToString();
+                    var date_time = row["date_time"].ToString();
+                    var ppa_year = row["ppa_year"].ToString();
+                    var is_other_funds = row["is_other_funds"].ToString(); 
 
-                    var auto_approved = ("select count(*) from [spms].[dbo].[spms_tblAutoApprovedEmployees] where ActionCode = 1 and eid = '" + eid + "'").Scalar();
+                        var auto_approved = ("select count(*) from [spms].[dbo].[spms_tblAutoApprovedEmployees] where ActionCode = 1 and eid = '" + eid + "'").Scalar();
 
                     if (auto_approved > 0)
                     {
@@ -884,11 +901,29 @@ namespace spms_ws
                     {
                         QRY_UPDATE = @"update [spms].[dbo].[spms_tblSubTask] set task_id = '" + task_id + "', project_id ='" + project_id + "',  subtask_description ='" + description.Replace("'", "''") + "',start_date = '" + start_date + "', end_date = '" + end_date + "',start_time = '" + start_time + "',end_time = '" + end_time + "',eid ='" + eid + "',is_done = '" + is_done + "',is_verified ='" + is_verified + "',updated_on = '" + updated + "',actual_start_date = '" + actual_start_date + "', actual_end_date = '" + actual_end_date + "', actual_start_time = '" + actual_start_time + "', actual_end_time = '" + actual_end_time + "',start_date_time = '" + start_date_time + "',end_date_time = '" + end_date_time + "',target_accomplished = '" + target_accomplished + "', isalarm = '" + isalarm + "' ,alarm_option_id = '" + alarm_option_id + "' , output = '" + output + "' , action_code = '" + action_code + "' , privacy = '" + privacy + "'  where id = '" + subtask_id + "' ;";
                     }
-
+                        
                     
                     (QRY_UPDATE).NonQuery();
 
-                }
+                        if (isppa == "1")
+                        {
+                            try
+                            {
+                                ("update [spms].[dbo].[spms_tblSubTask_PPA] set ppa_id = " + ppa_id + " ,activity_id = " + activity_id + " ,accomplishment = " + accomplishment + " , DateTimeEntered = "+ date_time +" , isOtherFunds = " + is_other_funds + ", ppa_year = " + ppa_year + "  where subtask_id = " + subtask_id + " ").NonQuery();
+
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
+                        
+
+                    }
                 #endregion
                 }
                 Return_msg = "success";
@@ -1125,6 +1160,7 @@ namespace spms_ws
             public int IsTravel { get; set; }
             public string ControlNoID { get; set; }
             public string remarks { get; set; }
+            public int isppa { get; set; }
             public int ppa_id { get; set; }
             public int activity_id { get; set; }
             public int accomplishment { get; set; }
@@ -2418,6 +2454,100 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             DataTable dt1 = (@"select  r_reason,r_date,r_date_to,time_from,time_to FROM [pmis].[dbo].[dilo_OBAS_tks_tbl] where eid = " + eid + " and YEAR(r_date) = "+currentYear+"").DataSet();
             final.Merge(dt1);
             return final;
+        }
+
+        [System.Web.Services.WebMethod()]
+        public DataTable GetOffice(int eid)
+        {
+            DataTable final = new DataTable("Office");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(common.pmis()))
+                {
+                    SqlCommand com = new SqlCommand(@"select Office from [pmis].[dbo].[employee] where eid = '" + eid + "'", con);
+                    con.Open();
+                    SqlDataReader reader = com.ExecuteReader();
+                    final.Load(reader);
+                    con.Close();
+                }
+                return final;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        [System.Web.Services.WebMethod()]
+        public DataTable GetOfficePPA(int officeid)
+        {
+            DataTable final = new DataTable("PPA");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(common.MyConnection()))
+                {
+                    SqlCommand com = new SqlCommand(@"select ppayear, isOtherFunds, ppaid, ppaName from [spms].[dbo].[vw_office_ppa] where implementingID = '" + officeid + "'", con);
+                    //SqlCommand com = new SqlCommand(@"select ppaid, ppaYear, ppaName, isOtherFunds from [memis].[dbo].[vw_infraPPAs] where implementingID = '" + officeid + "'", con);
+                    con.Open();
+                    SqlDataReader reader = com.ExecuteReader();
+                    final.Load(reader);
+                    con.Close();
+                }
+                return final;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        public DataTable GetPPAYear()
+        {
+            DataTable final = new DataTable("PPAYear");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(common.MyConnection()))
+                {
+                    SqlCommand com = new SqlCommand(@"select distinct ppayear from [spms].[dbo].[vw_office_ppa] ", con);
+                    con.Open();
+                    SqlDataReader reader = com.ExecuteReader();
+                    final.Load(reader);
+                    con.Close();
+                }
+                return final;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        [System.Web.Services.WebMethod()]
+        public DataTable GetActivity(int officeid)
+        {
+            DataTable final = new DataTable("Activity");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(common.MyConnection()))
+                {
+                    //SqlCommand com = new SqlCommand(@"select isOtherFunds, activityid, activity from [spms].[dbo].[vw_ppa_activity] where ppaid = '" + ppaid + "'", con);
+                    SqlCommand com = new SqlCommand(@";with ppaid as (SELECT ppaid from [spms].[dbo].[vw_office_ppa] where implementingID = '" + officeid + "') SELECT * from " +
+                        "[spms].[dbo].[vw_ppa_activity] where ppaid IN (SELECT * from ppaid)", con);
+                    con.Open();
+                    SqlDataReader reader = com.ExecuteReader();
+                    final.Load(reader);
+                    con.Close();
+                }
+                return final;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         public void ReduceImageSizeAndSave(string filename, Image image)
