@@ -76,10 +76,7 @@ namespace spms_ws
             {
               sem =  Convert.ToInt32(semester);
             }
-          
            
-
-
 
 
             if (trim_task_id == "")
@@ -88,8 +85,8 @@ namespace spms_ws
             }
             else
             {
-                var ids = (@"SELECT   STUFF((SELECT ', ' +  CAST(id as nvarchar) FROM [spms].[dbo].[spms_tblTask] where  ParentID in (" + trim_task_id + ") FOR XML PATH ('')),1,2, '') ").ScalarString();
-                qry = @"select b.id,b.Description,b.ParentID,a.TypeID,b.UserID,b.TargetID,c.semester_id,c.target_year from (select *  FROM [spms].[dbo].[spms_tblTask_Gantt] where TaskID in (select id FROM [spms].[dbo].[spms_tblTask] where UserID = '" + eid + "')) as a inner join  [spms].[dbo].[spms_tblTask] as b on a.TaskID = b.id inner join [spms].[dbo].[spms_tblIndividualTargets]  as c on b.TargetID = c.id where semester_id = '" + sem + "' and target_year = '" + currentYear + "'   union select b.id,b.Description,b.ParentID,a.TypeID,b.UserID,b.TargetID,c.semester_id,c.target_year from (select *  FROM [spms].[dbo].[spms_tblTask_Gantt] where TaskID in ("+tii+","+ids+")) as a inner join  [spms].[dbo].[spms_tblTask] as b on a.TaskID = b.id inner join [spms].[dbo].[spms_tblIndividualTargets]  as c on b.TargetID = c.id where semester_id = '" + sem + "' and target_year = '" + currentYear + "'";
+                var ids = (@"SELECT   STUFF((SELECT ', ' +  CAST(id as nvarchar) FROM [spms].[dbo].[spms_tblTask] where  ParentID in ('" + trim_task_id + "') FOR XML PATH ('')),1,2, '') ").ScalarString();
+                qry = @"select b.id,b.Description,b.ParentID,a.TypeID,b.UserID,b.TargetID,c.semester_id,c.target_year from (select *  FROM [spms].[dbo].[spms_tblTask_Gantt] where TaskID in (select id FROM [spms].[dbo].[spms_tblTask] where UserID = '" + eid + "')) as a inner join  [spms].[dbo].[spms_tblTask] as b on a.TaskID = b.id inner join [spms].[dbo].[spms_tblIndividualTargets]  as c on b.TargetID = c.id where semester_id = '" + sem + "' and target_year = '" + currentYear + "'   union select b.id,b.Description,b.ParentID,a.TypeID,b.UserID,b.TargetID,c.semester_id,c.target_year from (select *  FROM [spms].[dbo].[spms_tblTask_Gantt] where TaskID in ('"+tii+"','"+ids+"')) as a inner join  [spms].[dbo].[spms_tblTask] as b on a.TaskID = b.id inner join [spms].[dbo].[spms_tblIndividualTargets]  as c on b.TargetID = c.id where semester_id = '" + sem + "' and target_year = '" + currentYear + "'";
             }
 
 
@@ -2308,7 +2305,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             {
                 using (SqlConnection con = new SqlConnection(common.MyConnection()))
                 {
-                    SqlCommand com = new SqlCommand(@"select a.*,case when b.Remarks = '' or b.Remarks is null then 'none'  else b.Remarks end as remarks from ( select
+                    SqlCommand com = new SqlCommand(@"select a.*,case when b.Remarks = '' or b.Remarks is null then 'none'  else b.Remarks end as remarks,c.id as pparowid,c.ppa_id,c.activity_id,c.accomplishment,c.ActionCode,c.DateTimeEntered,c.isOtherFunds,c.ppa_year  from ( select
 	 id, 
      id as subtask_id,
 	 task_id,
@@ -2336,7 +2333,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
      privacy, 
      IsTravel,
      Case when ControlNoID = '0' or ControlNoID = '' then '0' else ControlNoID  END as ControlNoID
-     from [spms].[dbo].[spms_tblSubTask] where  eid = '" + eid + "' and id not in (" + ids_new + ") and action_code = 1 and subtask_description != '' and MONTH(actual_end_date) " + add.Replace("'", "") + " and YEAR(actual_start_date) = '" + currentYear + "' ) as a left join ( select * from ( select distinct SubtaskID,Remarks,ROW_NUMBER() Over (Partition By SubtaskID Order By id Desc) As Rn  from [spms].[dbo].[spms_tblAccomplishmentStatus_Logs]) as a where Rn = 1) as b on a.id = b.SubtaskID  order by actual_start_date  ", con);
+     from [spms].[dbo].[spms_tblSubTask] where  eid = '" + eid + "' and id not in (" + ids_new + ") and action_code = 1 and subtask_description != '' and MONTH(actual_end_date) " + add.Replace("'", "") + " and YEAR(actual_start_date) = '" + currentYear + "' ) as a left join ( select * from ( select distinct SubtaskID,Remarks,ROW_NUMBER() Over (Partition By SubtaskID Order By id Desc) As Rn  from [spms].[dbo].[spms_tblAccomplishmentStatus_Logs]) as a where Rn = 1) as b on a.id = b.SubtaskID  	 left join  [spms].[dbo].[spms_tblSubtask_PPA] as c on a.id = c.subtask_id order by actual_start_date  ", con);
                     con.Open();
                     SqlDataReader reader = com.ExecuteReader();
                     dt.Load(reader);
