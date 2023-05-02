@@ -2306,7 +2306,8 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             {
                 using (SqlConnection con = new SqlConnection(common.MyConnection()))
                 {
-                    SqlCommand com = new SqlCommand(@"select a.*,case when b.Remarks = '' or b.Remarks is null then 'none'  else b.Remarks end as remarks,c.ppa_id,c.activity_id,c.accomplishment,c.DateTimeEntered,c.isOtherFunds,c.ppa_year  from ( select
+                    SqlCommand com = new SqlCommand(@"select a.*,case when b.Remarks = '' or b.Remarks is null then 'none'  else b.Remarks end as remarks,
+     CASE when c.ppa_id is null then 0 else 1 end as isppa, c.ppa_id,c.activity_id,c.accomplishment,c.DateTimeEntered,c.isOtherFunds,c.ppa_year  from ( select
 	 id, 
      id as subtask_id,
 	 task_id,
