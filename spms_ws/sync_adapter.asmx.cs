@@ -876,7 +876,7 @@ namespace spms_ws
                     var output = row["output"].ToString();
                     var action_code = row["action_code"].ToString();
                     var privacy = row["privacy"].ToString();
-                    //var isppa = row["isppa"].ToString();
+                    var isppa = row["isppa"].ToString();
                     var ppa_id = row["ppa_id"].ToString();
                     var activity_id = row["activity_id"].ToString();
                     var accomplishment = row["accomplishment"].ToString();
@@ -903,8 +903,8 @@ namespace spms_ws
                     
                     (QRY_UPDATE).NonQuery();
 
-                    /*    if (isppa == "1")
-                        {*/
+                        if (isppa == "1")
+                        {
                             try
                             {
                                 ("update [spms].[dbo].[spms_tblSubTask_PPA] set ppa_id = " + ppa_id + " ,activity_id = " + activity_id + " ,accomplishment = " + accomplishment + " , DateTimeEntered = "+ date_time +" , isOtherFunds = " + is_other_funds + ", ppa_year = " + ppa_year + "  where subtask_id = " + subtask_id + " ").NonQuery();
@@ -914,12 +914,12 @@ namespace spms_ws
                             {
 
                             }
-        /*                }
+                        }
                         else
                         {
 
-                        }*/
-                        
+                        }
+
 
                     }
                 #endregion
