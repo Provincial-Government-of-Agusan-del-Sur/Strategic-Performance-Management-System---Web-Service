@@ -214,7 +214,7 @@ namespace spms_ws
                 dt.Columns.Add("privacy");
                 dt.Columns.Add("IsTravel");
                 dt.Columns.Add("ControlNoID");
-                //dt.Columns.Add("isppa");
+                dt.Columns.Add("isppa");
                 dt.Columns.Add("ppa_id");
                 dt.Columns.Add("activity_id");
                 dt.Columns.Add("accomplishment");
@@ -227,7 +227,7 @@ namespace spms_ws
                 {
                     dt.Rows.Add(s.id, s.subtask_id, s.task_id, s.project_id, s.description, s.start_date, s.end_date, s.start_time, s.end_time, EID, s.is_done
                         , s.is_verified, s.updated_on, s.actual_start_date, s.actual_end_date, s.actual_start_time, s.actual_end_time, s.start_date_time, s.end_date_time, s.target_accomplished,s.isalarm,s.alarm_option_id,s.output,s.action_code,s.privacy,s.IsTravel,s.ControlNoID
-                        , s.ppa_id, s.activity_id, s.accomplishment, s.date_time, s.is_other_funds, s.ppa_year);
+                        , s.isppa, s.ppa_id, s.activity_id, s.accomplishment, s.date_time, s.is_other_funds, s.ppa_year);
                     if (s.subtask_id == 0)
                     {
                         with_subtaskid = false;
@@ -423,7 +423,7 @@ namespace spms_ws
                     var privacy = row["privacy"].ToString();
                     var IsTravel = row["IsTravel"].ToString();
                     var ControlNoID = row["ControlNoID"].ToString();
-                    //var isppa = row["isppa"].ToString();
+                    var isppa = row["isppa"].ToString();
                     var ppa_id = row["ppa_id"].ToString();
                     var activity_id = row["activity_id"].ToString();
                     var accomplishment = row["accomplishment"].ToString();
@@ -471,8 +471,8 @@ namespace spms_ws
                     int s_id = (QRY).Scalar();
                     si = s_id;
 
-                        /*if (isppa == "1")
-                        {*/
+                        if(isppa == "1")
+                        {
                             try
                             {
                                 ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "')").NonQuery();
@@ -482,11 +482,12 @@ namespace spms_ws
                             {
 
                             }
-          /*              }
+                        }
                         else
                         {
 
-                        }  */
+                        }
+                          
                         
 
                     foreach (DataRow r in multi_task.Rows)
@@ -1157,7 +1158,7 @@ namespace spms_ws
             public int IsTravel { get; set; }
             public string ControlNoID { get; set; }
             public string remarks { get; set; }
-           // public int isppa { get; set; }
+            public int isppa { get; set; }
             public int ppa_id { get; set; }
             public int activity_id { get; set; }
             public int accomplishment { get; set; }
