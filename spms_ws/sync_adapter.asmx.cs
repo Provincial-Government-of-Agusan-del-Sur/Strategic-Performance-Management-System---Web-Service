@@ -908,7 +908,7 @@ namespace spms_ws
                         {
                             try
                             {
-                                ("update [spms].[dbo].[spms_tblSubTask_PPA] set ppa_id = " + ppa_id + " ,activity_id = " + activity_id + " ,accomplishment = " + accomplishment + " , DateTimeEntered = " + date_time + " , isOtherFunds = " + is_other_funds + ", ppa_year = " + ppa_year + "  where subtask_id = " + subtask_id + " ").NonQuery();
+                                ("update [spms].[dbo].[spms_tblSubTask_PPA] set ppa_id = '" + ppa_id + "' ,activity_id = '" + activity_id + "' ,accomplishment = '" + accomplishment + "' , DateTimeEntered = '" + date_time + "' , isOtherFunds = '" + is_other_funds + "', ppa_year = '" + ppa_year + "'  where subtask_id = '" + subtask_id + "' ").NonQuery();
 
                             }
                             catch (Exception ex)
