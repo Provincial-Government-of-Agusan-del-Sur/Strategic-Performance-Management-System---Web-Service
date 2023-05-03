@@ -881,8 +881,8 @@ namespace spms_ws
                     var activity_id = row["activity_id"].ToString();
                     var accomplishment = row["accomplishment"].ToString();
                     var date_time = row["date_time"].ToString();
+                    var is_other_funds = row["is_other_funds"].ToString();
                     var ppa_year = row["ppa_year"].ToString();
-                    var is_other_funds = row["is_other_funds"].ToString(); 
 
                         var auto_approved = ("select count(*) from [spms].[dbo].[spms_tblAutoApprovedEmployees] where ActionCode = 1 and eid = '" + eid + "'").Scalar();
 
@@ -899,15 +899,16 @@ namespace spms_ws
                     {
                         QRY_UPDATE = @"update [spms].[dbo].[spms_tblSubTask] set task_id = '" + task_id + "', project_id ='" + project_id + "',  subtask_description ='" + description.Replace("'", "''") + "',start_date = '" + start_date + "', end_date = '" + end_date + "',start_time = '" + start_time + "',end_time = '" + end_time + "',eid ='" + eid + "',is_done = '" + is_done + "',is_verified ='" + is_verified + "',updated_on = '" + updated + "',actual_start_date = '" + actual_start_date + "', actual_end_date = '" + actual_end_date + "', actual_start_time = '" + actual_start_time + "', actual_end_time = '" + actual_end_time + "',start_date_time = '" + start_date_time + "',end_date_time = '" + end_date_time + "',target_accomplished = '" + target_accomplished + "', isalarm = '" + isalarm + "' ,alarm_option_id = '" + alarm_option_id + "' , output = '" + output + "' , action_code = '" + action_code + "' , privacy = '" + privacy + "'  where id = '" + subtask_id + "' ;";
                     }
+
                         
-                    
+
                     (QRY_UPDATE).NonQuery();
 
                         if (isppa == "1")
                         {
                             try
                             {
-                                ("update [spms].[dbo].[spms_tblSubTask_PPA] set ppa_id = " + ppa_id + " ,activity_id = " + activity_id + " ,accomplishment = " + accomplishment + " , DateTimeEntered = "+ date_time +" , isOtherFunds = " + is_other_funds + ", ppa_year = " + ppa_year + "  where subtask_id = " + subtask_id + " ").NonQuery();
+                                ("update [spms].[dbo].[spms_tblSubTask_PPA] set ppa_id = " + ppa_id + " ,activity_id = " + activity_id + " ,accomplishment = " + accomplishment + " , DateTimeEntered = " + date_time + " , isOtherFunds = " + is_other_funds + ", ppa_year = " + ppa_year + "  where subtask_id = " + subtask_id + " ").NonQuery();
 
                             }
                             catch (Exception ex)
@@ -919,6 +920,8 @@ namespace spms_ws
                         {
 
                         }
+
+                        
 
 
                     }
@@ -2501,7 +2504,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             }
 
         }
-
+        [System.Web.Services.WebMethod()]
         public DataTable GetPPAYear()
         {
             DataTable final = new DataTable("PPAYear");
@@ -2509,7 +2512,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             {
                 using (SqlConnection con = new SqlConnection(common.MyConnection()))
                 {
-                    SqlCommand com = new SqlCommand(@"select distinct ppayear from [spms].[dbo].[vw_office_ppa] ", con);
+                    SqlCommand com = new SqlCommand(@"select distinct ppayear from [spms].[dbo].[vw_office_ppa]", con);
                     con.Open();
                     SqlDataReader reader = com.ExecuteReader();
                     final.Load(reader);
