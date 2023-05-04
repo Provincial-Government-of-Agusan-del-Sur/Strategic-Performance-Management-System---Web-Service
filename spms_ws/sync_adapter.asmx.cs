@@ -472,10 +472,11 @@ namespace spms_ws
                     si = s_id;
 
                         
-                          
-                        
 
-                    foreach (DataRow r in multi_task.Rows)
+
+
+
+                        foreach (DataRow r in multi_task.Rows)
                     {
                         String qry = "";
                         var m_id = r["id"].ToString();
@@ -566,22 +567,7 @@ namespace spms_ws
                                 }
                             }
 
-                                if (isppa == "1")
-                                {
-                                    try
-                                    {
-                                        ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "', null)").NonQuery();
-
-                                    }
-                                    catch (Exception ex)
-                                    {
-
-                                    }
-                                }
-                                else
-                                {
-
-                                } 
+                                
 
 
 
@@ -596,12 +582,29 @@ namespace spms_ws
 
                     }
 
-                  /*
-                  *This part is for executing stored procedure of cator..
-                  *
-                  */ 
+                        if (isppa == "1")
+                        {
+                            try
+                            {
+                                ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "', null)").NonQuery();
 
-                    var countGroup = (@"select count(GroupID) from [spms].[dbo].[spms_tblSubTask_IsMultipleRecurring] where subtask_id = '" + s_id + "'  and UserID = '" + eid + "'").Scalar();
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
+
+                        /*
+                        *This part is for executing stored procedure of cator..
+                        *
+                        */
+
+                        var countGroup = (@"select count(GroupID) from [spms].[dbo].[spms_tblSubTask_IsMultipleRecurring] where subtask_id = '" + s_id + "'  and UserID = '" + eid + "'").Scalar();
 
                     if (countGroup > 0)
                     {
