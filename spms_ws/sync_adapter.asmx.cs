@@ -475,7 +475,7 @@ namespace spms_ws
                         {
                             try
                             {
-                                ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "')").NonQuery();
+                                ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "', null)").NonQuery();
 
                             }
                             catch (Exception ex)
@@ -919,10 +919,7 @@ namespace spms_ws
                         else
                         {
 
-                        }
-
-                        
-
+                        }  
 
                     }
                 #endregion
@@ -938,10 +935,7 @@ namespace spms_ws
 
             return Return_msg;
         }
-
-
-
-
+         
 
         [System.Web.Services.WebMethod()]
         public DataTable CheckParameter(string username, string password)
