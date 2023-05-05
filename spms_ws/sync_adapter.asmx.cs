@@ -471,8 +471,22 @@ namespace spms_ws
                     int s_id = (QRY).Scalar();
                     si = s_id;
 
-                        
+                        if (isppa == "1")
+                        {
+                            try
+                            {
+                                ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "', null)").NonQuery();
 
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        } 
 
 
 
@@ -568,9 +582,6 @@ namespace spms_ws
                             }
 
                                 
-
-
-
                                 if (r_status == "end")
                             {
                                 ("update [spms].[dbo].[spms_tblSubTask] set is_done = 1 where id = '" + s_id + "'").NonQuery();
@@ -582,22 +593,7 @@ namespace spms_ws
 
                     }
 
-                        if (isppa == "1")
-                        {
-                            try
-                            {
-                                ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + ppa_id + "', '" + activity_id + "', '" + accomplishment + "', '" + action_code + "', '" + date_time + "', '" + eid + "', '" + is_other_funds + "', '" + ppa_year + "', null)").NonQuery();
-
-                            }
-                            catch (Exception ex)
-                            {
-
-                            }
-                        }
-                        else
-                        {
-
-                        }
+                        
 
                         /*
                         *This part is for executing stored procedure of cator..
