@@ -39,10 +39,16 @@ namespace PphisWebService.Models
                 userName,
                 0);
 
-            if (result != 0)
+         
+            if (result == 0 || result == 1219)
+            {
+
+            }
+            else
             {
                 throw new Win32Exception(result, "Error connecting to remote share");
             }
+
         }
 
         ~ConnectToSharedFolder()
