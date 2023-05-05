@@ -39,9 +39,9 @@ namespace spms_ws
     [System.Web.Script.Services.ScriptService]
     public class sync_adapter : System.Web.Services.WebService
     {
-        public string networkPath = @"\\192.168.2.8\pgas_attachment\spms\DAR";
+        public string networkPath = @"\\192.168.2.210\pgas_attachment\spms\DAR";
         // public string networkPath = @"\\192.168.2.8\pgas_photo\guest_images";
-        NetworkCredential credentials = new NetworkCredential(@"pgas.ph\loigie.panganoron", "DomainUser1");
+        NetworkCredential credentials = new NetworkCredential(@"pgas.ph\loigie.panganoron", "123456");
         [WebMethod]
         public string HelloWorld()
         {
@@ -571,7 +571,7 @@ namespace spms_ws
                                     }
 
                                     Image img = Image.FromStream(ms , true, true);
-                                    ReduceImageSizeAndSave(networkPath + @"\" + pic_id + ".png", img);
+                                    ReduceImageSizeAndSave(newpath + @"\" + pic_id + ".png", img);
 
 
                                 }
@@ -700,91 +700,115 @@ namespace spms_ws
 
                         //NEW
 
-                        try
-                        {
-                            var httpRequest = HttpContext.Current.Request;
+                        //try
+                        //{
+                        //    var httpRequest = HttpContext.Current.Request;
 
-                            var postedFile = httpRequest.Files[loopCounter];
+                        //    var postedFile = httpRequest.Files[loopCounter];
+
+
+                        //    //var filePath = HttpContext.Current.Server.MapPath("~/proof/" + EID);
+                        //    //bool exists = System.IO.Directory.Exists(filePath);
+
+                        //    //if (!exists)
+                        //    //{
+                        //    //    System.IO.Directory.CreateDirectory(filePath);
+                        //    //}
+                        //    //postedFile.SaveAs(filePath + "/" + pic_id + ".png");
+
+
+                        //    using (new ConnectToSharedFolder(networkPath, credentials))
+                        //    {
+                        //        try
+                        //        {
+                        //            var newpath = networkPath + "\\" + EID;
+                        //            if (!Directory.Exists(newpath ))
+                        //            {
+                        //                Directory.CreateDirectory(newpath);
+                        //            }
+
+                        //            Image img = Image.FromStream(postedFile.InputStream, true, true);
+                        //            ReduceImageSizeAndSave(networkPath + @"\" + pic_id + ".png", img);
+
+
+                        //        }
+                        //        catch (Exception ex)
+                        //        {
+
+                        //        }
+                        //    }
+
+
+
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    var exs =  ""+ex;
+                        //}
+
+
+
+
+
 
                          
-                            //var filePath = HttpContext.Current.Server.MapPath("~/proof/" + EID);
-                            //bool exists = System.IO.Directory.Exists(filePath);
+                        // //OLD
+                         
+                        //byte[] imagearr = System.Convert.FromBase64String(r_picture);
 
-                            //if (!exists)
-                            //{
-                            //    System.IO.Directory.CreateDirectory(filePath);
-                            //}
-                            //postedFile.SaveAs(filePath + "/" + pic_id + ".png");
-
-                             
-                            using (new ConnectToSharedFolder(networkPath, credentials))
-                            {
-                                try
-                                {
-                                    var newpath = networkPath + "\\" + EID;
-                                    if (!Directory.Exists(newpath ))
-                                    {
-                                        Directory.CreateDirectory(newpath);
-                                    }
-
-                                    Image img = Image.FromStream(postedFile.InputStream, true, true);
-                                    ReduceImageSizeAndSave(networkPath + @"\" + pic_id + ".png", img);
-
-
-                                }
-                                catch (Exception ex)
-                                {
-
-                                }
-                            }
+                        //MemoryStream ms = new MemoryStream(imagearr, 0, imagearr.Length);
+                        //ms.Write(imagearr, 0, imagearr.Length);
 
 
 
-                        }
-                        catch (Exception ex)
-                        {
-                            var exs =  ""+ex;
-                        }
+                        //if (!Directory.Exists(Server.MapPath("~/proof/" + EID)))
+                        //{
+                        //    Directory.CreateDirectory(Server.MapPath("~/proof/" + EID));
+                        //}
+
+                        //string s = @"\";
+
+                        //// Convert byte[] to Image 
+                        //System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        ////  image.Save(@"\\10.0.0.5\\proof\\" + EID +"\\"+ pic_id + ".png");
+                        //image.Save(Server.MapPath("~/proof/" + EID + "/" + pic_id + ".png"));
+
+                        //// Convert byte[] to Image 
+                        ////System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        ////image.Save(@"\\10.0.0.5\\proof\\"+EID+"\\"+ pic_id+".png");
 
 
-
-                      
-
-
-                            /** 
-                            //OLD
-                             * 
-                             * 
-                            byte[] imagearr = System.Convert.FromBase64String(r_picture);
-
-                            MemoryStream ms = new MemoryStream(imagearr, 0, imagearr.Length);
-                            ms.Write(imagearr, 0, imagearr.Length);
+                        byte[] imagearr = Convert.FromBase64String(r_picture);
+                        MemoryStream ms = new MemoryStream(imagearr, 0, imagearr.Length);
+                        ms.Write(imagearr, 0, imagearr.Length);
 
                         
 
-                            if (!Directory.Exists(Server.MapPath("~/proof/" + EID)))
+                        using (new ConnectToSharedFolder(networkPath, credentials))
+                        {
+                            try
                             {
-                                Directory.CreateDirectory(Server.MapPath("~/proof/" + EID));
+                                var newpath = networkPath + "\\" + EID;
+                                if (!Directory.Exists(newpath))
+                                {
+                                    Directory.CreateDirectory(newpath);
+                                }
+
+                                Image img = Image.FromStream(ms, true, true);
+                                ReduceImageSizeAndSave(newpath + @"\" + pic_id + ".png", img);
+
+
                             }
+                            catch (Exception ex)
+                            {
 
-                            string s = @"\";
-
-                            // Convert byte[] to Image 
-                            System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                            //  image.Save(@"\\10.0.0.5\\proof\\" + EID +"\\"+ pic_id + ".png");
-                            image.Save(Server.MapPath("~/proof/" + EID + "/" + pic_id + ".png"));
-                         
-                            // Convert byte[] to Image 
-                            //System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                            //image.Save(@"\\10.0.0.5\\proof\\"+EID+"\\"+ pic_id+".png");
-                        
-                             */
+                            }
+                        }
 
 
 
 
-
-                            if (r_status == "end")
+                        if (r_status == "end")
                         {
                             ("update [spms].[dbo].[spms_tblSubTask] set is_done = 1 where id = '" + r_subtask_id + "'").NonQuery();
                         }
