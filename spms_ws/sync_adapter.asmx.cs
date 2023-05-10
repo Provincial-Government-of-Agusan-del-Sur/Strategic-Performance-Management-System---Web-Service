@@ -803,10 +803,8 @@ namespace spms_ws
                             {
                                 
                             }
-                        }
-
-
-
+                        } 
+                         
 
                         if (r_status == "end")
                         {
