@@ -2342,7 +2342,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 	 CONVERT(VARCHAR(50),FORMAT(CAST(actual_end_time as DateTime), 'hh:mm tt')) as actual_end_time,  
 	 CONVERT(varchar(20),start_date_time , 120 ) as start_date_time,
 	 CONVERT(varchar(20),end_date_time , 120 ) as end_date_time,
-	 target_accomplished,
+	 isnull(target_accomplished, 0) target_accomplished,
      isalarm,
      alarm_option_id,
      output ,     
@@ -2465,7 +2465,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             DataTable final = new DataTable("Leave");
 
 
-            DataTable dt1 = (@"select  r_reason,r_date,r_date_to,time_from,time_to FROM [pmis].[dbo].[dilo_OBAS_tks_tbl] where eid = " + eid + " and YEAR(r_date) = "+currentYear+"").DataSet();
+            DataTable dt1 = (@"select  r_reason,r_date,r_date_to,time_from,time_to FROM [pmis].[dbo].[dilo_OBAS_tks_tbl] where eid = " + eid + " and YEAR(r_date) = "+currentYear+" and isactive = 1").DataSet();
             final.Merge(dt1);
             return final;
         }
