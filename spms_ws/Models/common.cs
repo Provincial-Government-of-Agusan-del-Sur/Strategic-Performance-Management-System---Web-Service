@@ -35,5 +35,11 @@ namespace IMS.Models
             // return @"Data Source=10.0.0.123;initial catalog=SPMS;Password=123123;Persist Security Info=True;User ID=sa;";
         }
 
+        public static string memis()
+        {
+            return @"Data Source=192.168.101.52;initial catalog=memis;Password=pimo@123;Persist Security Info=True;User ID=sa;";
+ 
+        }
+
     }
 }

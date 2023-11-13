@@ -28,6 +28,11 @@ namespace IMS.Classess
             return Convert.ToInt32(OleDbHelper.ExecuteScalar(ConfigurationManager.ConnectionStrings["MyConnection"].ToString(), CommandType.Text, query));
         }
 
+        public static int ScalarInt(this string query)
+        {
+            return Convert.ToInt32(OleDbHelper.ExecuteScalar(ConfigurationManager.ConnectionStrings["memis"].ToString(), CommandType.Text, query));
+        }
+
         public static string ScalarString(this string query)
         {
             return Convert.ToString(OleDbHelper.ExecuteScalar(ConfigurationManager.ConnectionStrings["MyConnection"].ToString(), CommandType.Text, query));
