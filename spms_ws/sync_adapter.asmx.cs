@@ -1281,6 +1281,14 @@ namespace spms_ws
 
         }
 
+        public class infra_findings
+        {
+            public string id { get; set; }
+            public string findings { get; set; }
+            public string recommendations { get; set; } 
+
+        }
+
         [System.Web.Services.WebMethod()]
         public DataTable jsonfeed(int stat, int eid)
         {
@@ -1777,7 +1785,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
         }
 
         [WebMethod]
-        public string uploadInfraMonitoring(string json, string jsonequipment, string jsonmaterials)
+        public string uploadInfraMonitoring(string json, string jsonequipment, string jsonmaterials, string jsonfindings)
         {
             string ret = "";
 
@@ -1785,12 +1793,14 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             infra[] rd = js.Deserialize<infra[]>(json);
             infra_equipment[] ie = js.Deserialize<infra_equipment[]>(jsonequipment);
             infra_materials[] im = js.Deserialize<infra_materials[]>(jsonmaterials);
+            infra_findings[] findings = js.Deserialize<infra_findings[]>(jsonfindings);
             //dataproperty[] dp = js.Deserialize<dataproperty[]>(jsonproperty);
             //List<rowdata> model = JsonConvert.DeserializeObject<List<rowdata>>(json);
 
             DataTable dt = new DataTable();
             DataTable dtp = new DataTable();
             DataTable dtm = new DataTable();
+            DataTable dtf = new DataTable();
 
             try
             {
@@ -2054,6 +2064,47 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMaterials] values ('" + id + "', '" + location + "', '" + description + "', '" + qty + "', '" + unit + "', '0', '1')", con);
                         }
                         
+
+                        con.Open();
+                        com.ExecuteNonQuery();
+                        //dt.Load(reader);
+                        con.Close();
+                    }
+
+
+                    ret = "success";
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            try
+            {
+                dtf.Columns.Add("id");
+                dtf.Columns.Add("findings");
+                dtf.Columns.Add("recommendations"); 
+
+                foreach (var s in findings.OfType<infra_findings>())
+                {
+                    dtf.Rows.Add(s.id, s.findings, s.recommendations);
+                }
+
+                foreach (DataRow r in dtf.Rows)
+                {
+                    //String qry = "";
+                    var id = r["id"].ToString();
+                    var findings1 = r["findings"].ToString();
+                    var recommendations = r["recommendations"].ToString(); 
+
+
+                    using (SqlConnection con = new SqlConnection(common.memis()))
+                    {
+                        SqlCommand com = new SqlCommand();
+
+                        com = new SqlCommand($@"insert into [memis].[dbo].[tblInfaFindings] values ('" + id + "', '" + findings1 + "', '" + recommendations + "')", con);
 
                         con.Open();
                         com.ExecuteNonQuery();
