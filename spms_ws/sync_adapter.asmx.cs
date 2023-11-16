@@ -530,8 +530,7 @@ namespace spms_ws
                             var r_mill = r["mill"].ToString();
 
                             PIC_QRY = @"insert into [spms].[dbo].[spms_tblSubTaskProof] values('','" + r_date_entry + "','" + s_id + "','" + r_longitude + "','" + r_latitude + "','" + r_status + "','" + EID + "','png','" + r_mill + "') select SCOPE_IDENTITY();";
-
-
+                                 
 
                             var pic_id = (PIC_QRY).Scalar();
 
@@ -1281,6 +1280,20 @@ namespace spms_ws
 
         }
 
+        public class infra_attachment
+        {
+            public string id { get; set; }
+            public string picture { get; set; }
+            public string date_entry { get; set; }
+            public string ppaid { get; set; }
+            public string position_name { get; set; } 
+            public double longitude { get; set; }
+            public double latitude { get; set; } 
+            public string eid { get; set; } 
+            public Int64 mill { get; set; }
+
+        }
+
         public class infra_findings
         {
             public string id { get; set; }
@@ -1785,7 +1798,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
         }
 
         [WebMethod]
-        public string uploadInfraMonitoring(string json, string jsonequipment, string jsonmaterials, string jsonfindings)
+        public string uploadInfraMonitoring(string json, string jsonequipment, string jsonmaterials, string jsonfindings, string attachment, string EID)
         {
             string ret = "";
 
@@ -1794,13 +1807,14 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             infra_equipment[] ie = js.Deserialize<infra_equipment[]>(jsonequipment);
             infra_materials[] im = js.Deserialize<infra_materials[]>(jsonmaterials);
             infra_findings[] findings = js.Deserialize<infra_findings[]>(jsonfindings);
-            //dataproperty[] dp = js.Deserialize<dataproperty[]>(jsonproperty);
-            //List<rowdata> model = JsonConvert.DeserializeObject<List<rowdata>>(json);
+            infra_attachment[] attach = js.Deserialize<infra_attachment[]>(attachment);
+          
 
             DataTable dt = new DataTable();
             DataTable dtp = new DataTable();
             DataTable dtm = new DataTable();
             DataTable dtf = new DataTable();
+            DataTable dtattach = new DataTable();
 
             try
             {
@@ -1933,7 +1947,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             "'" + am_1 + "', '" + am_2 + "', '" + am_3 + "', '" + am_4 + "', '" + am_5 + "', '" + am_6 + "', '" + am_7 + "', '" + am_8 + "', '" + am_9 + "', '" + am_10 + "', '" + am_11 + "'," +
                             "'" + am_12 + "', '" + pm_1 + "', '" + pm_2 + "', '" + pm_3 + "', '" + pm_4 + "', '" + pm_5 + "', '" + pm_6 + "', '" + pm_7 + "', '" + pm_8 + "', '" + pm_9 + "', '" + pm_10 + "', '" + pm_11 + "', '" + pm_12 + "', '" + project_manager + "'," +
                             "'" + project_engineer + "', '" + materials_engineer + "', '" + safety_engineer + "', '" + survey_engineer + "','" + office_engineer + "', '" + construction_foreman + "', '" + he_operator + "', '" + drivers + "', '" + laborers + "'," +
-                            "'" + mason + "', '" + carpenter + "', '" + material_remarks + "', '" + work_progress + "')", con);
+                            "'" + mason + "', '" + carpenter + "', '" + material_remarks + "', '" + work_progress + "','" + EID + "')", con);
                         }
 
                         //con.Open();
@@ -2114,6 +2128,86 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
 
                     ret = "success";
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            try
+            {
+                dtattach.Columns.Add("id");
+                dtattach.Columns.Add("picture");
+                dtattach.Columns.Add("date_entry");
+                dtattach.Columns.Add("ppaid");
+                dtattach.Columns.Add("position_name");
+                dtattach.Columns.Add("longitude");
+                dtattach.Columns.Add("latitude");
+                //dtattach.Columns.Add("eid");
+                dtattach.Columns.Add("mill");
+
+                foreach (var s in attach.OfType<infra_attachment>())
+                {
+                    dtattach.Rows.Add(s.id, s.picture, s.date_entry, s.ppaid, s.position_name, s.longitude, s.latitude, s.mill);
+                }
+
+                foreach (DataRow r in dtattach.Rows)
+                {
+                    //String qry = "";
+                    String PIC_QRY = "";
+                    var id = r["id"].ToString();
+                    var picture = r["picture"].ToString();
+                    var date_entry = r["date_entry"].ToString();
+                    var ppaid = r["ppaid"].ToString();
+                    var position_name = r["position_name"].ToString();
+                    var longitude = r["longitude"].ToString();
+                    var latitude = r["latitude"].ToString();
+                    //var eid = r["eid"].ToString();
+                    var mill = r["mill"].ToString();
+
+                    using (SqlConnection con = new SqlConnection(common.memis()))
+                    {
+                        SqlCommand com = new SqlCommand();
+
+                        com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraAttachment] values('','" + date_entry + "','" + ppaid + "','" + position_name + "','" + longitude + "','" + latitude + "','" + EID + "','png','" + mill + "')", con);
+
+                        con.Open();
+                        com.ExecuteNonQuery();
+                        //dt.Load(reader);
+                        con.Close();
+                    }
+
+
+                    ret = "success";
+
+                    //PIC_QRY = @"insert into [memis].[dbo].[tblInfraAttachment] values('','" + date_entry + "','" + ppaid + "','" + position_name + "','" + longitude + "','" + latitude + "','" + eid + "','png','" + mill + "') select SCOPE_IDENTITY();";
+
+                    byte[] imagearr = Convert.FromBase64String(picture);
+                    MemoryStream ms = new MemoryStream(imagearr, 0, imagearr.Length);
+                    ms.Write(imagearr, 0, imagearr.Length);
+
+                    using (new ConnectToSharedFolder(networkPath, credentials))
+                    {
+                        try
+                        {
+                            var newpath = networkPath + "\\" + EID;
+                            if (!Directory.Exists(newpath))
+                            {
+                                Directory.CreateDirectory(newpath);
+                            }
+
+                            Image img = Image.FromStream(ms, true, true);
+                            ReduceImageSizeAndSave(newpath + @"\" + picture + ".png", img);
+
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
 
                 }
             }
