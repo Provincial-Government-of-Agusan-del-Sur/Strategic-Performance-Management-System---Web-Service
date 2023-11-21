@@ -1964,7 +1964,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     {
                         SqlCommand com = new SqlCommand();
 
-                        com = new SqlCommand(@"select count(*) from [memis].[dbo].[tblInfraMonitoring] where ppaid = '" + project_id + "'", con);
+                        com = new SqlCommand(@"select count(*) from [memis].[dbo].[tblInfraMonitoring] where ppaid = '" + project_id + "' and eid = '"+ EID +"'", con);
                         con.Open();
 
                         int isexist = Convert.ToInt32(com.ExecuteScalar());
@@ -1975,7 +1975,8 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             "am_one = '" + am_1 + "', am_two = '" + am_2 + "', am_three = '" + am_3 + "', am_four = '" + am_4 + "', am_five = '" + am_5 + "', am_six = '" + am_6 + "', am_seven = '" + am_7 + "', am_eight = '" + am_8 + "', am_nine = '" + am_9 + "', am_ten = '" + am_10 + "', am_eleven = '" + am_11 + "'," +
                             "am_twelve = '" + am_12 + "', pm_one = '" + pm_1 + "', pm_two = '" + pm_2 + "', pm_three = '" + pm_3 + "', pm_four = '" + pm_4 + "', pm_five = '" + pm_5 + "', pm_six = '" + pm_6 + "', pm_seven = '" + pm_7 + "', pm_eight = '" + pm_8 + "', pm_nine = '" + pm_9 + "', pm_ten = '" + pm_10 + "', " +
                             "pm_eleven = '" + pm_11 + "', pm_twelve = '" + pm_12 + "', project_manager = '" + project_manager + "', project_engineer = '" + project_engineer + "', materials_engineer = '" + materials_engineer + "', safety_engineer = '" + safety_engineer + "', survey_engineer = '" + survey_engineer + "', " +
-                            "office_engineer = '" + office_engineer + "', construction_foreman = '" + construction_foreman + "', he_operator = '" + he_operator + "', drivers = '" + drivers + "', laborers = '" + laborers + "', mason = '" + mason + "', carpenter = '" + carpenter + "', material_remarks = '" + material_remarks + "', work_progress = '" + work_progress + "'", con);
+                            "office_engineer = '" + office_engineer + "', construction_foreman = '" + construction_foreman + "', he_operator = '" + he_operator + "', drivers = '" + drivers + "', laborers = '" + laborers + "', mason = '" + mason + "', carpenter = '" + carpenter + "', material_remarks = '" + material_remarks + "', work_progress = '" + work_progress + "'" +
+                            "where ppaid = '"+ project_id +"' and eid = '"+ EID +"'", con);
                         }
                         else
                         {
