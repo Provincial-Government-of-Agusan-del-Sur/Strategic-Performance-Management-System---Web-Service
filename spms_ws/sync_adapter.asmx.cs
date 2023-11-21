@@ -41,7 +41,7 @@ namespace spms_ws
     {
         public string networkPath = @"\\192.168.2.210\pgas_attachment\spms\DAR";
         // public string networkPath = @"\\192.168.2.8\pgas_photo\guest_images";
-        NetworkCredential credentials = new NetworkCredential(@"pgas.ph\loigie.panganoron", "123456");
+        NetworkCredential credentials = new NetworkCredential(@"pgas.ph\ranel.cator", "DomainUser1");
         [WebMethod]
         public string HelloWorld()
         {
@@ -1254,12 +1254,15 @@ namespace spms_ws
             public string carpenter { get; set; }
             public string material_remarks { get; set; }
             public string work_progress { get; set; }
+            public string start_date_time { get; set; }
+            public string end_date_time { get; set; }
+            public string updated_on { get; set; }
              
         }
 
         public class infra_equipment
         {
-            public string id { get; set; }
+            public string ppaid { get; set; }
             public string equipment { get; set; }
             public string qty { get; set; }
             public string operating { get; set; }
@@ -1270,7 +1273,7 @@ namespace spms_ws
 
         public class infra_materials
         {
-            public string id { get; set; }
+            public string ppaid { get; set; }
             public string location { get; set; }
             public string description { get; set; }
             public string qty { get; set; }
@@ -1296,7 +1299,7 @@ namespace spms_ws
 
         public class infra_findings
         {
-            public string id { get; set; }
+            public string ppaid { get; set; }
             public string findings { get; set; }
             public string recommendations { get; set; } 
 
@@ -1801,6 +1804,8 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
         public string uploadInfraMonitoring(string json, string jsonequipment, string jsonmaterials, string jsonfindings, string attachment, string EID)
         {
             string ret = "";
+            String QRY = "";
+            int s_id = 0;
 
             var js = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
             infra[] rd = js.Deserialize<infra[]>(json);
@@ -1863,6 +1868,9 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                 dt.Columns.Add("carpenter");
                 dt.Columns.Add("material_remarks");
                 dt.Columns.Add("work_progress");
+                dt.Columns.Add("start_date_time");
+                dt.Columns.Add("end_date_time");
+                dt.Columns.Add("updated_on");
 
 
                 foreach (var s in rd.OfType<infra>())
@@ -1870,10 +1878,35 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     dt.Rows.Add(s.project_id, s.title, s.location, s.date_started, s.date_ended, s.time_started, s.time_ended, s.am_1, s.am_2, s.am_3, s.am_4, s.am_5, s.am_6, s.am_7,
                         s.am_8, s.am_9, s.am_10, s.am_11, s.am_12, s.pm_1, s.pm_2, s.pm_3, s.pm_4, s.pm_5, s.pm_6, s.pm_7, s.pm_8, s.pm_9, s.pm_10, s.pm_11, s.pm_12, s.project_manager,
                         s.project_engineer, s.materials_engineer, s.safety_engineer, s.survey_engineer, s.office_engineer, s.construction_foreman, s.he_operator, s.drivers,
-                        s.laborers, s.mason, s.carpenter, s.material_remarks, s.work_progress);
+                        s.laborers, s.mason, s.carpenter, s.material_remarks, s.work_progress, s.start_date_time, s.end_date_time, s.updated_on);
 
                 }
 
+                
+
+                dtattach.Columns.Add("id");
+                dtattach.Columns.Add("picture");
+                dtattach.Columns.Add("date_entry");
+                dtattach.Columns.Add("ppaid");
+                dtattach.Columns.Add("position_name");
+                dtattach.Columns.Add("longitude");
+                dtattach.Columns.Add("latitude");
+                //dtattach.Columns.Add("eid");
+                dtattach.Columns.Add("mill");
+
+                foreach (var s in attach.OfType<infra_attachment>())
+                {
+                    dtattach.Rows.Add(s.id, s.picture, s.date_entry, s.ppaid, s.position_name, s.longitude, s.latitude, s.mill);
+                }
+
+
+                DataTable picture_with_subtask_id = dtattach.Clone();
+                DataRow[] row_picture_with_subtask_id = dtattach.Select("NOT(ppaid = 0)");
+
+                foreach (DataRow row in row_picture_with_subtask_id)
+                {
+                    picture_with_subtask_id.ImportRow(row);
+                }
 
                 foreach (DataRow row in dt.Rows)
                 {
@@ -1923,6 +1956,9 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     var carpenter = row["carpenter"].ToString();
                     var material_remarks = row["material_remarks"].ToString();
                     var work_progress = row["work_progress"].ToString();
+                    var start_date_time = row["start_date_time"].ToString();
+                    var end_date_time = row["end_date_time"].ToString();
+                    var updated_on = row["updated_on"].ToString();
 
                     using (SqlConnection con = new SqlConnection(common.memis()))
                     {
@@ -1950,12 +1986,114 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             "'" + mason + "', '" + carpenter + "', '" + material_remarks + "', '" + work_progress + "','" + EID + "')", con);
                         }
 
+                        var spms_is_exist = (@"select count(*) from [spms].[dbo].[spms_tblSubTask] where project_id = '" + project_id + "' and eid = '"+ EID +"'").Scalar();
+
+                        if (spms_is_exist > 0)
+                        {
+                            ret = "succes";
+                            return ret;
+                        }
+                        else
+                        {
+                            QRY = @"insert into [spms].[dbo].[spms_tblSubTask]  values(0,'" + project_id + "','" + title.Replace("'", "''") + "','" + date_started + "','" + date_ended + "','" + time_started + "','" + time_ended + "','" + EID + "',1,0,'" + updated_on + "','" + date_started + "','" + date_ended + "','" + time_started + "','" + time_ended + "','" + start_date_time + "','" + end_date_time + "',0,0,0,'" + material_remarks + "',1,1,0,0) select SCOPE_IDENTITY();";
+
+                            s_id = (QRY).Scalar();
+                        }
+                         
+
                         //con.Open();
                         //com.ExecuteNonQuery();
                         SqlDataReader reader = com.ExecuteReader();
                         con.Close();
 
                     }
+
+                    DataTable GetPicture = dtattach.Clone();
+                    DataRow[] select_pic = dtattach.Select("ppaid = '" + project_id + "'");
+
+                    int count = 0;
+                    foreach (DataRow pic_row in select_pic)
+                    {
+                        count++;
+                        GetPicture.ImportRow(pic_row);
+                    }
+
+                    if (count > 0)
+                    {
+                        foreach (DataRow r in GetPicture.Rows)
+                        {
+                            //String qry = "";
+                            String PIC_QRY = "";
+                            var id = r["id"].ToString();
+                            var picture = r["picture"].ToString();
+                            var date_entry = r["date_entry"].ToString();
+                            var ppaid = r["ppaid"].ToString();
+                            var position_name = r["position_name"].ToString();
+                            var longitude = r["longitude"].ToString();
+                            var latitude = r["latitude"].ToString();
+                            var mill = r["mill"].ToString();
+
+                            /*using (SqlConnection con = new SqlConnection(common.memis()))
+                            {
+                                SqlCommand com = new SqlCommand();
+
+                                com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraAttachment] values('','" + date_entry + "','" + ppaid + "','" + position_name + "','" + longitude + "','" + latitude + "','" + EID + "','png','" + mill + "')", con);
+
+                                con.Open();
+                                com.ExecuteNonQuery();
+                                //dt.Load(reader);
+                                con.Close();
+                            }*/
+
+
+                            PIC_QRY = @"insert into [spms].[dbo].[spms_tblSubTaskProof] values('','" + date_entry + "','" + s_id + "','" + longitude + "','" + latitude + "',' ','" + EID + "','png','" + mill + "') select SCOPE_IDENTITY();";
+
+
+                            var pic_id = (PIC_QRY).Scalar();
+
+                            (@"update [spms].[dbo].[spms_tblSubTaskProof] set attachment = '" + pic_id + "' where id = '" + pic_id + "'").NonQuery();
+                             
+
+                            byte[] imagearr = Convert.FromBase64String(picture);
+                            MemoryStream ms = new MemoryStream(imagearr, 0, imagearr.Length);
+                            ms.Write(imagearr, 0, imagearr.Length);
+
+                            using (new ConnectToSharedFolder(networkPath, credentials))
+                            {
+                                try
+                                {
+                                    var newpath = networkPath + "\\" + EID;
+                                    if (!Directory.Exists(newpath))
+                                    {
+                                        Directory.CreateDirectory(newpath);
+                                    }
+
+                                    Image img = Image.FromStream(ms, true, true);
+                                    ReduceImageSizeAndSave(newpath + @"\" + pic_id + ".png", img);
+
+
+                                }
+                                catch (Exception ex)
+                                {
+
+                                }
+                            }
+
+                            try
+                            {
+                                String qry = @"insert into [spms].[dbo].[tbl_infra_spms_logs]  values ('" + s_id + "','" + pic_id + "')";
+                                (qry).NonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+
+
+                        }
+
+                    }
+
 
 
                     ret = "success";
@@ -1970,7 +2108,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
             try
             {
-                dtp.Columns.Add("id");
+                dtp.Columns.Add("ppaid");
                 dtp.Columns.Add("equipment");
                 dtp.Columns.Add("qty");
                 dtp.Columns.Add("operating");
@@ -1979,13 +2117,13 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
                 foreach (var s in ie.OfType<infra_equipment>())
                 {
-                    dtp.Rows.Add(s.id, s.equipment, s.qty, s.operating, s.standby, s.breakdown);
+                    dtp.Rows.Add(s.ppaid, s.equipment, s.qty, s.operating, s.standby, s.breakdown);
                 }
 
                 foreach (DataRow r in dtp.Rows)
                 {
                     //String qry = "";
-                    var id = r["id"].ToString();
+                    var ppaid = r["ppaid"].ToString();
                     var equipment = r["equipment"].ToString();
                     var qty = r["qty"].ToString();
                     var operating = r["operating"].ToString();
@@ -2005,15 +2143,15 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
                         if (operating == "true")
                         {
-                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraEquipment] values ('" + id + "', '" + equipment + "', '" + qty + "', '1', '0', '0')", con);
+                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraEquipment] values ('" + ppaid + "', '" + equipment + "', '" + qty + "', '1', '0', '0')", con);
                         }
                         else if (standby == "true")
                         {
-                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraEquipment] values ('" + id + "', '" + equipment + "', '" + qty + "', '0', '1', '0')", con);
+                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraEquipment] values ('" + ppaid + "', '" + equipment + "', '" + qty + "', '0', '1', '0')", con);
                         }
                         else if (breakdown == "true")
                         {
-                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraEquipment] values ('" + id + "', '" + equipment + "', '" + qty + "', '0', '0', '1')", con);
+                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraEquipment] values ('" + ppaid + "', '" + equipment + "', '" + qty + "', '0', '0', '1')", con);
                         }
 
                         con.Open();
@@ -2034,7 +2172,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
             try
             {
-                dtm.Columns.Add("id");
+                dtm.Columns.Add("ppaid");
                 dtm.Columns.Add("location");
                 dtm.Columns.Add("description");
                 dtm.Columns.Add("qty");
@@ -2044,13 +2182,13 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
                 foreach (var s in im.OfType<infra_materials>())
                 {
-                    dtm.Rows.Add(s.id, s.location, s.description, s.qty, s.unit, s.accepted, s.rejected);
+                    dtm.Rows.Add(s.ppaid, s.location, s.description, s.qty, s.unit, s.accepted, s.rejected);
                 }
 
                 foreach (DataRow r in dtm.Rows)
                 {
                     //String qry = "";
-                    var id = r["id"].ToString();
+                    var ppaid = r["ppaid"].ToString();
                     var location = r["location"].ToString();
                     var description = r["description"].ToString();
                     var qty = r["qty"].ToString();
@@ -2071,11 +2209,11 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
                         if (accepted == "true")
                         {
-                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMaterials] values ('" + id + "', '" + location + "', '" + description + "', '" + qty + "', '" + unit + "', '1', '0')", con);
+                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMaterials] values ('" + ppaid + "', '" + location + "', '" + description + "', '" + qty + "', '" + unit + "', '1', '0')", con);
                         }
                         else if (rejected == "true")
                         {
-                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMaterials] values ('" + id + "', '" + location + "', '" + description + "', '" + qty + "', '" + unit + "', '0', '1')", con);
+                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMaterials] values ('" + ppaid + "', '" + location + "', '" + description + "', '" + qty + "', '" + unit + "', '0', '1')", con);
                         }
                         
 
@@ -2097,19 +2235,19 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
             try
             {
-                dtf.Columns.Add("id");
+                dtf.Columns.Add("ppaid");
                 dtf.Columns.Add("findings");
                 dtf.Columns.Add("recommendations"); 
 
                 foreach (var s in findings.OfType<infra_findings>())
                 {
-                    dtf.Rows.Add(s.id, s.findings, s.recommendations);
+                    dtf.Rows.Add(s.ppaid, s.findings, s.recommendations);
                 }
 
                 foreach (DataRow r in dtf.Rows)
                 {
                     //String qry = "";
-                    var id = r["id"].ToString();
+                    var ppaid = r["ppaid"].ToString();
                     var findings1 = r["findings"].ToString();
                     var recommendations = r["recommendations"].ToString(); 
 
@@ -2118,7 +2256,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     {
                         SqlCommand com = new SqlCommand();
 
-                        com = new SqlCommand($@"insert into [memis].[dbo].[tblInfaFindings] values ('" + id + "', '" + findings1 + "', '" + recommendations + "')", con);
+                        com = new SqlCommand($@"insert into [memis].[dbo].[tblInfaFindings] values ('" + ppaid + "', '" + findings1 + "', '" + recommendations + "')", con);
 
                         con.Open();
                         com.ExecuteNonQuery();
@@ -2136,7 +2274,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
             }
 
-            try
+            /*try
             {
                 dtattach.Columns.Add("id");
                 dtattach.Columns.Add("picture");
@@ -2167,7 +2305,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     //var eid = r["eid"].ToString();
                     var mill = r["mill"].ToString();
 
-                    using (SqlConnection con = new SqlConnection(common.memis()))
+                    *//*using (SqlConnection con = new SqlConnection(common.memis()))
                     {
                         SqlCommand com = new SqlCommand();
 
@@ -2177,12 +2315,29 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                         com.ExecuteNonQuery();
                         //dt.Load(reader);
                         con.Close();
+                    }*//*
+                    
+
+                   
+
+                    PIC_QRY = @"insert into [spms].[dbo].[spms_tblSubTaskProof] values('','" + date_entry + "','" + s_id + "','" + r_longitude + "','" + r_latitude + "','" + r_status + "','" + EID + "','png','" + r_mill + "') select SCOPE_IDENTITY();";
+
+
+                    var pic_id = (PIC_QRY).Scalar();
+
+                    (@"update [spms].[dbo].[spms_tblSubTaskProof] set attachment = '" + pic_id + "' where id = '" + pic_id + "'").NonQuery();
+
+                    int s_id = (QRY).Scalar();
+                    try
+                    {
+                        String qry = @"insert into [spms].[dbo].[tbl_infra_spms_logs]  values ('" + s_id + "',1)";
+                        (qry).NonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+
                     }
 
-
-                    ret = "success";
-
-                    //PIC_QRY = @"insert into [memis].[dbo].[tblInfraAttachment] values('','" + date_entry + "','" + ppaid + "','" + position_name + "','" + longitude + "','" + latitude + "','" + eid + "','png','" + mill + "') select SCOPE_IDENTITY();";
 
                     byte[] imagearr = Convert.FromBase64String(picture);
                     MemoryStream ms = new MemoryStream(imagearr, 0, imagearr.Length);
@@ -2209,80 +2364,18 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                         }
                     }
 
+                    ret = "success";
+
                 }
             }
             catch (Exception ex)
             {
 
-            }
+            }*/
 
             return "1";
         }
-
-        /*[System.Web.Services.WebMethod()]
-        public string uploadInfraMonitoring(string ppaid, string ppaName, string ppaLocation, string date_started, string date_ended, string time_started, string time_ended
-            , string am_one, string am_two, string am_three, string am_four, string am_five, string am_six, string am_seven, string am_eight, string am_nine, string am_ten, string am_eleven, string am_twelve, string pm_one, string pm_two, string pm_three
-            , string pm_four, string pm_five, string pm_six, string pm_seven, string pm_eight, string pm_nine, string pm_ten, string pm_eleven, string pm_twelve, string project_manager, string project_engineer, string materials_engineer, string safety_engineer
-            , string survey_engineer, string office_engineer, string construction_foreman, string he_operator, string drivers, string laborers, string mason, string carpenter, string material_remarks, string work_progress)
-        {
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(common.memis()))
-                {
-                    SqlCommand com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMonitoring] values ('" + ppaid + "','" + ppaName + "','" + ppaLocation + "', '" + date_started + "', '" + date_ended + "'," +
-                        "'" + time_started + "', '" + time_ended + "', '" + am_one + "', '" + am_two + "', '" + am_three + "', '" + am_four + "', '" + am_five + "', '" + am_six + "', '" + am_seven + "', '" + am_eight + "', '" + am_nine + "', '" + am_ten + "', '" + am_eleven + "'," +
-                        "'" + am_twelve + "', '" + pm_one + "', '" + pm_two + "', '" + pm_three + "', '" + pm_four + "', '" + pm_five + "', '" + pm_six + "', '" + pm_seven + "', '" + pm_eight + "', '" + pm_nine + "', '" + pm_ten + "', '" + pm_eleven + "', '" + pm_twelve + "', '" + project_manager + "'," +
-                        "'" + project_engineer + "', '" + materials_engineer + "', '" + safety_engineer + "', '" + survey_engineer + "','" + office_engineer + "', '" + construction_foreman + "', '" + he_operator + "', '" + drivers + "', '" + laborers + "'," +
-                        "'" + mason + "', '" + carpenter + "', '" + material_remarks + "', '" + work_progress + "')", con);
-
-                    //SqlCommand com = new SqlCommand($@"EXEC sp_infraMonitoring " + ppaid + ", '" + ppaName + "', '" + ppaLocation + "', '" + date_started + "', '" + date_ended + "'", con);
-
-
-                    con.Open();
-                    com.ExecuteScalar().ToString();
-                    con.Close();
-
-                }
-            }
-            catch (Exception ex)
-            {
-                return "failed";
-            }
-
-
-            return "success";
-        }*/
-
-        /*[System.Web.Services.WebMethod()]
-        public int uploadInfraMonitoring(int ppaid, string ppaName, string ppaLocation, string date_started, string date_ended, string time_started, string time_ended
-            , string am_one, string am_two, string am_three, string am_four, string am_five, string am_six, string am_seven, string am_eight, string am_nine, string am_ten, string am_eleven, string am_twelve, string pm_one, string pm_two, string pm_three
-            , string pm_four, string pm_five, string pm_six, string pm_seven, string pm_eight, string pm_nine, string pm_ten, string pm_eleven, string pm_twelve, string project_manager, string project_engineer, string materials_engineer, string safety_engineer
-            , string survey_engineer, string office_engineer, string construction_foreman, string he_operator, string drivers, string laborers, string mason, string carpenter, string material_remarks, string work_progress)
-        {
-
-            DataTable dt = new DataTable("name");
-            dt.Columns.Add("officeid");
-            dt.Columns.Add("rating");
-            dt.Columns.Add("signature");
-            dt.Columns.Add("qid");
-
-            try
-            {
-
-                int id = ($@"insert into [memis].[dbo].[tblInfraMonitoring] values ({ppaid},'{ppaName}','{ppaLocation}','{date_started}','{date_ended}','{time_started}','{time_ended}','{am_one}','{am_two}','{am_three}','{am_four}',
-                            '{am_four}','{am_five}','{am_six}','{am_seven}','{am_eight}','{am_nine}','{am_ten}','{am_eleven}','{am_twelve}','{pm_one}','{pm_two}','{pm_three}','{pm_four}','{pm_five}','{pm_six}','{pm_seven}','{pm_eight}','{pm_nine}','{pm_ten}','{pm_eleven}','{pm_twelve}',
-                            '{project_manager}','{project_engineer}','{materials_engineer}','{safety_engineer}','{survey_engineer}','{office_engineer}','{construction_foreman}','{he_operator}','{drivers}',
-                            '{laborers}','{mason}',{Convert.ToInt32(carpenter)},'{material_remarks}','{work_progress}')").ScalarInt();
-
-                return id;
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
-
-        }*/
+         
 
         [System.Web.Services.WebMethod()]
         public string SaveActivity(string StartDateString, string EndDateString, string StartTime, string EndTime,
