@@ -3250,7 +3250,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             {
                 using (SqlConnection con = new SqlConnection(common.memis()))
                 {
-                    SqlCommand com = new SqlCommand(@"SELECT ppaid, ppaYear, implementingID, ppaName, ppaAmount, isnull(ppaLocation, '0') ppaLocation, durationDate FROM [memis].[dbo].[vw_infraPPAs] where implementingID = '"+officeid+"' ", con);
+                    SqlCommand com = new SqlCommand(@"SELECT ppaid, ppaYear, implementingID, ppaName, ppaAmount, isnull(imp,'0') imp, isnull(ppaLocation, '0') ppaLocation, durationDate FROM [memis].[dbo].[vw_infraPPAs] where implementingID = '"+officeid+"' ", con);
                     con.Open();
                     SqlDataReader reader = com.ExecuteReader();
                     final.Load(reader);
