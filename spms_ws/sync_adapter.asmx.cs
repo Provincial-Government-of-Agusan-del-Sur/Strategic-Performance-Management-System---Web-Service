@@ -461,7 +461,7 @@ namespace spms_ws
                     {
                         QRY = @"insert into [spms].[dbo].[spms_tblSubTask]  values('" + task_id + "','" + project_id + "','" + description.Replace("'", "''") + "',null,null,null,null,'" + eid + "','" + is_done + "','" + is_verified + "','" + updated + "','" + actual_start_date + "','" + actual_end_date + "','" + actual_start_time + "','" + actual_end_time + "','" + start_date_time + "','" + end_date_time + "','" + target_accomplished + "','"+isalarm+"','"+alarm_option_id+"','"+output+"','"+action_code+"','"+privacy+"','"+IsTravel+"','"+ControlNoID+"') select SCOPE_IDENTITY();";
                     }
-                    else
+                    else if (isppa != "5")
                     {
                         QRY = @"insert into [spms].[dbo].[spms_tblSubTask]  values('" + task_id + "','" + project_id + "','" + description.Replace("'", "''") + "','" + start_date + "','" + end_date + "','" + start_time + "','" + end_time + "','" + eid + "','" + is_done + "','" + is_verified + "','" + updated + "','" + actual_start_date + "','" + actual_end_date + "','" + actual_start_time + "','" + actual_end_time + "','" + start_date_time + "','" + end_date_time + "','" + target_accomplished + "','" + isalarm + "','" + alarm_option_id + "','" + output + "','" + action_code + "','" + privacy + "','" + IsTravel + "','" + ControlNoID + "') select SCOPE_IDENTITY();";
                     }
