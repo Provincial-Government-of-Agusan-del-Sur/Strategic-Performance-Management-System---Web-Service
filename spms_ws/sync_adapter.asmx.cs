@@ -2004,7 +2004,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                         if (spms_is_exist > 0)
                         {
                             ret = "succes";
-                            return ret;
+                            //return ret;
                         }
                         else
                         {
