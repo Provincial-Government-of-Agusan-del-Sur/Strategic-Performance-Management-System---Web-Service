@@ -1210,8 +1210,12 @@ namespace spms_ws
         public class infra
         {
             public int project_id { get; set; }
+            public int activity_id { get; set; }
+            public int is_otherfunds { get; set; }
+            public int year { get; set; }
             public string title { get; set; }
             public string location { get; set; } 
+            public string datetime_entered { get; set; } 
             public string date_started { get; set; }
             public string date_ended { get; set; }
             public string time_started { get; set; }
@@ -1824,8 +1828,12 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             try
             {
                 dt.Columns.Add("project_id");
+                dt.Columns.Add("activity_id");
+                dt.Columns.Add("is_otherfunds");
+                dt.Columns.Add("year");
                 dt.Columns.Add("title");
                 dt.Columns.Add("location");
+                dt.Columns.Add("datetime_entered");
                 dt.Columns.Add("date_started");
                 dt.Columns.Add("date_ended");
                 dt.Columns.Add("time_started");
@@ -1875,7 +1883,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
 
                 foreach (var s in rd.OfType<infra>())
                 {
-                    dt.Rows.Add(s.project_id, s.title, s.location, s.date_started, s.date_ended, s.time_started, s.time_ended, s.am_1, s.am_2, s.am_3, s.am_4, s.am_5, s.am_6, s.am_7,
+                    dt.Rows.Add(s.project_id, s.activity_id, s.is_otherfunds, s.year, s.title, s.location, s.datetime_entered, s.date_started, s.date_ended, s.time_started, s.time_ended, s.am_1, s.am_2, s.am_3, s.am_4, s.am_5, s.am_6, s.am_7,
                         s.am_8, s.am_9, s.am_10, s.am_11, s.am_12, s.pm_1, s.pm_2, s.pm_3, s.pm_4, s.pm_5, s.pm_6, s.pm_7, s.pm_8, s.pm_9, s.pm_10, s.pm_11, s.pm_12, s.project_manager,
                         s.project_engineer, s.materials_engineer, s.safety_engineer, s.survey_engineer, s.office_engineer, s.construction_foreman, s.he_operator, s.drivers,
                         s.laborers, s.mason, s.carpenter, s.material_remarks, s.work_progress, s.start_date_time, s.end_date_time, s.updated_on);
@@ -1912,8 +1920,12 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                 {
                     
                     var project_id = row["project_id"].ToString();
+                    var activity_id = row["activity_id"].ToString();
+                    var is_otherfunds = row["is_otherfunds"].ToString();
+                    var year = row["year"].ToString();
                     var title = row["title"].ToString();
                     var location = row["location"].ToString();
+                    var datetime_entered = row["datetime_entered"].ToString();
                     var date_started = row["date_started"].ToString();
                     var date_ended = row["date_ended"].ToString();
                     var time_started = row["time_started"].ToString();
@@ -1964,7 +1976,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     {
                         SqlCommand com = new SqlCommand();
 
-                        com = new SqlCommand(@"select count(*) from [memis].[dbo].[tblInfraMonitoring] where ppaid = '" + project_id + "' and eid = '"+ EID +"'", con);
+                        com = new SqlCommand(@"select count(*) from [memis].[dbo].[tblInfraMonitoring] where activityid = '" + activity_id + "'", con);
                         con.Open();
 
                         int isexist = Convert.ToInt32(com.ExecuteScalar());
@@ -1976,11 +1988,11 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             "am_twelve = '" + am_12 + "', pm_one = '" + pm_1 + "', pm_two = '" + pm_2 + "', pm_three = '" + pm_3 + "', pm_four = '" + pm_4 + "', pm_five = '" + pm_5 + "', pm_six = '" + pm_6 + "', pm_seven = '" + pm_7 + "', pm_eight = '" + pm_8 + "', pm_nine = '" + pm_9 + "', pm_ten = '" + pm_10 + "', " +
                             "pm_eleven = '" + pm_11 + "', pm_twelve = '" + pm_12 + "', project_manager = '" + project_manager + "', project_engineer = '" + project_engineer + "', materials_engineer = '" + materials_engineer + "', safety_engineer = '" + safety_engineer + "', survey_engineer = '" + survey_engineer + "', " +
                             "office_engineer = '" + office_engineer + "', construction_foreman = '" + construction_foreman + "', he_operator = '" + he_operator + "', drivers = '" + drivers + "', laborers = '" + laborers + "', mason = '" + mason + "', carpenter = '" + carpenter + "', material_remarks = '" + material_remarks + "', work_progress = '" + work_progress + "'" +
-                            "where ppaid = '"+ project_id +"' and eid = '"+ EID +"'", con);
+                            "where activityid = '"+ activity_id +"'", con);
                         }
                         else
                         {
-                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMonitoring] values ('" + project_id + "','" + title + "','" + location + "','" + date_started + "','" + date_ended + "', '" + time_started + "', '" + time_ended + "', " +
+                            com = new SqlCommand($@"insert into [memis].[dbo].[tblInfraMonitoring] values ('" + project_id + "', '"+ activity_id +"', '"+ is_otherfunds +"','" + title + "','" + location + "','" + date_started + "','" + date_ended + "', '" + time_started + "', '" + time_ended + "', " +
                             "'" + am_1 + "', '" + am_2 + "', '" + am_3 + "', '" + am_4 + "', '" + am_5 + "', '" + am_6 + "', '" + am_7 + "', '" + am_8 + "', '" + am_9 + "', '" + am_10 + "', '" + am_11 + "'," +
                             "'" + am_12 + "', '" + pm_1 + "', '" + pm_2 + "', '" + pm_3 + "', '" + pm_4 + "', '" + pm_5 + "', '" + pm_6 + "', '" + pm_7 + "', '" + pm_8 + "', '" + pm_9 + "', '" + pm_10 + "', '" + pm_11 + "', '" + pm_12 + "', '" + project_manager + "'," +
                             "'" + project_engineer + "', '" + materials_engineer + "', '" + safety_engineer + "', '" + survey_engineer + "','" + office_engineer + "', '" + construction_foreman + "', '" + he_operator + "', '" + drivers + "', '" + laborers + "'," +
@@ -1999,6 +2011,8 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             QRY = @"insert into [spms].[dbo].[spms_tblSubTask]  values(0,'" + project_id + "','" + title.Replace("'", "''") + "','" + date_started + "','" + date_ended + "','" + time_started + "','" + time_ended + "','" + EID + "',1,0,'" + updated_on + "','" + date_started + "','" + date_ended + "','" + time_started + "','" + time_ended + "','" + start_date_time + "','" + end_date_time + "',0,0,0,'" + material_remarks + "',1,1,0,0) select SCOPE_IDENTITY();";
 
                             s_id = (QRY).Scalar();
+
+                            ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + project_id + "', '" + activity_id + "', '" + work_progress + "', 1 , '"+ datetime_entered +"', '" + EID + "', '" + is_otherfunds + "', '"+ year +"', null)").NonQuery();
                         }
                          
 
@@ -3250,7 +3264,14 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
             {
                 using (SqlConnection con = new SqlConnection(common.memis()))
                 {
-                    SqlCommand com = new SqlCommand(@"SELECT ppaid, ppaYear, implementingID, ppaName, ppaAmount, isnull(imp,'0') imp, isnull(ppaLocation, '0') ppaLocation, durationDate FROM [memis].[dbo].[vw_infraPPAs] where implementingID = '"+officeid+"' ", con);
+                    //SqlCommand com = new SqlCommand(@"SELECT ppaid, ppaYear, implementingID, ppaName, ppaAmount, isnull(imp,'0') imp, isnull(ppaLocation, '0') ppaLocation, durationDate FROM [memis].[dbo].[vw_infraPPAs] where implementingID = '"+officeid+"' ", con);
+                    SqlCommand com = new SqlCommand($@"SELECT isnull(a.implementingID, '0') implementingID,a.ppaYear ppaYear,a.ppaid ppaid,a.ppaName,a.ppaAmount,isnull(a.ppaLocation, '0') ppaLocation,a.durationDate,isnull(a.imp,'0') imp,isnull(b.milestoneID, 0) actID,isnull(b.activities, '0') activity,a.isOtherFunds FROM [memis].[dbo].[vw_infraPPAs] a left join
+[memis].[dbo].tblMilestoneImp b on b.ppaofficeid=a.ppaid
+where a.isOtherFunds = 0 and a.implementingID = '{officeid}' -- 20% PDF
+union
+SELECT isnull(a.implementingID, '0') implementingID,a.ppaYear ppaYear,a.ppaid ppaid,a.ppaName,a.ppaAmount,isnull(a.ppaLocation, '0') ppaLocation,a.durationDate,isnull(a.imp,'0') imp,isnull(b.impId, 0) actID,isnull(b.description, '0') activity,a.isOtherFunds FROM [memis].[dbo].[vw_infraPPAs] a left join
+[memis].[dbo].tblImpOthers b on b.ppaId=a.ppaid
+where a.isOtherFunds = 1 and a.implementingID = '" +officeid+"'", con);
                     con.Open();
                     SqlDataReader reader = com.ExecuteReader();
                     final.Load(reader);
