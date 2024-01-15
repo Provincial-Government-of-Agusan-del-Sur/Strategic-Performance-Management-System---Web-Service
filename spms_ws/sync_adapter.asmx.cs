@@ -461,7 +461,7 @@ namespace spms_ws
                     {
                         QRY = @"insert into [spms].[dbo].[spms_tblSubTask]  values('" + task_id + "','" + project_id + "','" + description.Replace("'", "''") + "',null,null,null,null,'" + eid + "','" + is_done + "','" + is_verified + "','" + updated + "','" + actual_start_date + "','" + actual_end_date + "','" + actual_start_time + "','" + actual_end_time + "','" + start_date_time + "','" + end_date_time + "','" + target_accomplished + "','"+isalarm+"','"+alarm_option_id+"','"+output+"','"+action_code+"','"+privacy+"','"+IsTravel+"','"+ControlNoID+"') select SCOPE_IDENTITY();";
                     }
-                    else if (isppa != "5")
+                    else
                     {
                         QRY = @"insert into [spms].[dbo].[spms_tblSubTask]  values('" + task_id + "','" + project_id + "','" + description.Replace("'", "''") + "','" + start_date + "','" + end_date + "','" + start_time + "','" + end_time + "','" + eid + "','" + is_done + "','" + is_verified + "','" + updated + "','" + actual_start_date + "','" + actual_end_date + "','" + actual_start_time + "','" + actual_end_time + "','" + start_date_time + "','" + end_date_time + "','" + target_accomplished + "','" + isalarm + "','" + alarm_option_id + "','" + output + "','" + action_code + "','" + privacy + "','" + IsTravel + "','" + ControlNoID + "') select SCOPE_IDENTITY();";
                     }
@@ -471,7 +471,7 @@ namespace spms_ws
                     int s_id = (QRY).Scalar();
                     si = s_id;
 
-                        if (isppa == "1")
+                        if (isppa == "1" || isppa == "2")
                         {
                             try
                             {
@@ -1976,7 +1976,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                     {
                         SqlCommand com = new SqlCommand();
 
-                        com = new SqlCommand(@"select count(*) from [memis].[dbo].[tblInfraMonitoring] where activityid = '" + activity_id + "'", con);
+                        com = new SqlCommand(@"select count(*) from [memis].[dbo].[tblInfraMonitoring] where ppaid = '"+ project_id +"' and activityid = '" + activity_id + "'", con);
                         con.Open();
 
                         int isexist = Convert.ToInt32(com.ExecuteScalar());
@@ -1988,7 +1988,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             "am_twelve = '" + am_12 + "', pm_one = '" + pm_1 + "', pm_two = '" + pm_2 + "', pm_three = '" + pm_3 + "', pm_four = '" + pm_4 + "', pm_five = '" + pm_5 + "', pm_six = '" + pm_6 + "', pm_seven = '" + pm_7 + "', pm_eight = '" + pm_8 + "', pm_nine = '" + pm_9 + "', pm_ten = '" + pm_10 + "', " +
                             "pm_eleven = '" + pm_11 + "', pm_twelve = '" + pm_12 + "', project_manager = '" + project_manager + "', project_engineer = '" + project_engineer + "', materials_engineer = '" + materials_engineer + "', safety_engineer = '" + safety_engineer + "', survey_engineer = '" + survey_engineer + "', " +
                             "office_engineer = '" + office_engineer + "', construction_foreman = '" + construction_foreman + "', he_operator = '" + he_operator + "', drivers = '" + drivers + "', laborers = '" + laborers + "', mason = '" + mason + "', carpenter = '" + carpenter + "', material_remarks = '" + material_remarks + "', work_progress = '" + work_progress + "'" +
-                            "where activityid = '"+ activity_id +"'", con);
+                            "where ppaid = '" + project_id + "' and activityid = '" + activity_id +"'", con);
                         }
                         else
                         {
@@ -1999,7 +1999,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             "'" + mason + "', '" + carpenter + "', '" + material_remarks + "', '" + work_progress + "','" + EID + "')", con);
                         }
 
-                        var spms_is_exist = (@"select count(*) from [spms].[dbo].[spms_tblSubTask] where project_id = '" + project_id + "' and eid = '"+ EID +"'").Scalar();
+                        /*var spms_is_exist = (@"select count(*) from [spms].[dbo].[spms_tblSubTask] where project_id = '" + project_id + "' and eid = '"+ EID +"'").Scalar();
 
                         if (spms_is_exist > 0)
                         {
@@ -2013,7 +2013,7 @@ where t1.subtask_id in (" + NewString + ") GROUP BY t1.subtask_id", con);
                             s_id = (QRY).Scalar();
 
                             ("insert into [spms].[dbo].[spms_tblSubTask_PPA] values ('" + s_id + "', '" + project_id + "', '" + activity_id + "', '" + work_progress + "', 1 , '"+ datetime_entered +"', '" + EID + "', '" + is_otherfunds + "', '"+ year +"', null)").NonQuery();
-                        }
+                        }*/
                          
 
                         //con.Open();
