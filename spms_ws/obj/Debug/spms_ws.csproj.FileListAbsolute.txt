@@ -10,6 +10,7 @@ C:\Users\DELL\Documents\Visual Studio 2015\Projects\spms_ws\spms_ws\spms_ws\bin\
 C:\Users\DELL\Documents\Visual Studio 2015\Projects\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.csprojResolveAssemblyReference.cache
 C:\Users\DELL\Documents\Visual Studio 2015\Projects\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.dll
 C:\Users\DELL\Documents\Visual Studio 2015\Projects\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.pdb
+<<<<<<< .mine
 C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\bin\spms_ws.dll.config
 C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\bin\spms_ws.dll
 C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\bin\spms_ws.pdb
@@ -17,3 +18,12 @@ C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.csproj.CoreComp
 C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.dll
 C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.pdb
 C:\Users\Yan\Documents\spms_ws\spms_ws\spms_ws\obj\Debug\spms_ws.csproj.AssemblyReference.cache
+||||||| .r1984
+=======
+C:\Users\DELL\Documents\Visual Studio 2015\Projects\mynew\spms_ws\spms_ws\bin\spms_ws.dll.config
+C:\Users\DELL\Documents\Visual Studio 2015\Projects\mynew\spms_ws\spms_ws\bin\spms_ws.dll
+C:\Users\DELL\Documents\Visual Studio 2015\Projects\mynew\spms_ws\spms_ws\bin\spms_ws.pdb
+C:\Users\DELL\Documents\Visual Studio 2015\Projects\mynew\spms_ws\spms_ws\obj\Debug\spms_ws.csprojResolveAssemblyReference.cache
+C:\Users\DELL\Documents\Visual Studio 2015\Projects\mynew\spms_ws\spms_ws\obj\Debug\spms_ws.dll
+C:\Users\DELL\Documents\Visual Studio 2015\Projects\mynew\spms_ws\spms_ws\obj\Debug\spms_ws.pdb
+>>>>>>> .r17753

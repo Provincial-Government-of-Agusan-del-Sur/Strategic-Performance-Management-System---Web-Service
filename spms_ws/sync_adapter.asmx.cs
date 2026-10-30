@@ -39,9 +39,26 @@ namespace spms_ws
     [System.Web.Script.Services.ScriptService]
     public class sync_adapter : System.Web.Services.WebService
     {
+<<<<<<< .mine
         public string networkPath = @"\\192.168.2.210\pgas_attachment\spms\DAR";
+||||||| .r1978
+        public string networkPath = @"\\192.168.2.8\pgas_attachment\spms\DAR";
+=======
+        
+
+        public string networkPath = @"\\192.168.2.210\pgas_attachment\spms\DAR";
+>>>>>>> .r17753
         // public string networkPath = @"\\192.168.2.8\pgas_photo\guest_images";
+<<<<<<< .mine
         NetworkCredential credentials = new NetworkCredential(@"pgas.ph\ranel.cator", "DomainUser1");
+||||||| .r1978
+        NetworkCredential credentials = new NetworkCredential(@"pgas.ph\loigie.panganoron", "DomainUser1");
+=======
+        NetworkCredential credentials = new NetworkCredential(@"pgas\spms.attm", "EsmeraldaTank@30");
+
+
+
+>>>>>>> .r17753
         [WebMethod]
         public string HelloWorld()
         {
@@ -954,6 +971,77 @@ namespace spms_ws
         }
          
 
+<<<<<<< .mine
+||||||| .r1978
+
+
+
+
+=======
+        [WebMethod()]
+        public string  submitproof(string date_entry,string event_id,string subtask_id,string longitude,string latitude,string status,string mill,string eid,string image)
+        {
+            
+            try
+            {
+                #region hide
+
+                String PIC_QRY = "";
+
+                var r_date_entry =  date_entry ;
+                var r_event_id =  event_id ;
+                var r_subtask_id =  subtask_id ;
+                var r_longitude =  longitude ;
+                var r_latitude = latitude;
+                var r_status = status;
+                var r_mill = mill;
+                var EID = eid;
+
+                PIC_QRY = @"insert into [spms].[dbo].[spms_tblSubTaskProof] values('','" + r_date_entry + "','" + r_subtask_id + "','" + r_longitude + "','" + r_latitude + "','" + r_status + "','" + EID + "','png','" + r_mill + "') select SCOPE_IDENTITY();";
+
+>>>>>>> .r17753
+
+                var pic_id = (PIC_QRY).Scalar();
+
+
+                (@"update [spms].[dbo].[spms_tblSubTaskProof] set attachment = '" + pic_id + "' where id = '" + pic_id + "'").NonQuery();
+
+                var bytes = Convert.FromBase64String(image);
+
+                using (new ConnectToSharedFolder(networkPath, credentials))
+                 {
+                           
+                                var newpath = networkPath + "\\" + EID;
+                                if (!Directory.Exists(newpath))
+                                {
+                                    Directory.CreateDirectory(newpath);
+                                }
+
+                               // Image img = Image.FromStream(bytes, true, true);
+                               // ReduceImageSizeAndSave(newpath + @"\" + pic_id + ".png", img);
+                                File.WriteAllBytes(newpath + @"\" + pic_id + ".png", bytes);
+                }
+
+               
+
+                // NOTE: To store in memory use postedFile.InputStreams
+
+                if (r_status == "end")
+                {
+                    ("update [spms].[dbo].[spms_tblSubTask] set is_done = 1 where id = '" + r_subtask_id + "'").NonQuery();
+                }
+                #endregion
+                return "1";
+            }
+            catch (Exception ex)
+            {
+                return "" + ex.Message;
+            }
+             
+        }
+
+
+
         [System.Web.Services.WebMethod()]
         public DataTable CheckParameter(string username, string password)
         {
@@ -1131,7 +1219,13 @@ namespace spms_ws
             {
                 using (SqlConnection con = new SqlConnection(common.MyConnection()))
                 {
+<<<<<<< .mine
                     SqlCommand com = new SqlCommand(@"select 12 as update_available,'We recommend to sync your data first before updating.    <br>Need assistance ? Dont hesitate to call us..<br> <br>Just dial 310 on your ip phone for technical assistance. Thank you' as text", con);
+||||||| .r1978
+                    SqlCommand com = new SqlCommand(@"select 11 as update_available,'We recommend to sync your data first before updating.    <br>Need assistance ? Dont hesitate to call us..<br> <br>Just dial 310 on your ip phone for technical assistance. Thank you' as text", con);
+=======
+                    SqlCommand com = new SqlCommand(@"select 13 as update_available,'We recommend to sync your data first before updating.    <br>Need assistance ? Dont hesitate to call us..<br> <br>Just dial 310 on your ip phone for technical assistance. Thank you' as text", con);
+>>>>>>> .r17753
                     con.Open();
                     SqlDataReader reader = com.ExecuteReader();
                     dt.Load(reader);
@@ -1328,7 +1422,50 @@ namespace spms_ws
          //   if (stat == 1)
             //{
             var officeid = (@"select Department FROM [pmis].[dbo].[m_vwGetAllEmployee_Minified] where eid = '" + eid + "'").Scalar();
-            qry = @"select tbl_1.*,tbl_2.*,Case when tbl_3.likes is not null then tbl_3.likes else '0' end as likes, Case when tbl_4.subtask_id is not null then '1' else '0' end as isLiked,tbl_5.EmpFullName as liker,tbl_5.liker_eid from ( SELECT top 50 subtask_id, STUFF((SELECT ',' + CONCAT(' 10.0.0.5/proof/',eid,'/',attachment,'.',attachment_extension) FROM spms_tblSubTaskProof as t2 WHERE t1.subtask_id = t2.subtask_id FOR XML PATH ('')),1,2, '') as image FROM spms_tblSubTaskProof as t1 LEFT JOIN spms_tblSubtask as a ON t1.subtask_id = a.id  where a.Privacy = 2 GROUP BY t1.subtask_id order by t1.subtask_id desc) as tbl_1 inner join   ( select  a1.updated_on as timeStamp,a1.id,a1.subtask_description as status,'http://192.168.2.104/hris/Content/images/photos/'+cast(a1.eid as nvarchar(20) ) +'.png' as profilePic,b1.EmpFullName as name,b1.Department from [spms].[dbo].[spms_tblSubTask]  as a1  inner join  [pmis].[dbo].[m_vwGetAllEmployee_Minified] as b1 on a1.eid = b1.eid  where a1.action_code = 1 ) as tbl_2 on tbl_1.subtask_id = tbl_2.id left join ( select count(subtask_id) as likes , subtask_id FROM [spms].[dbo].[spms_tblNewsfeed_ItemUpvotes]group by subtask_id ) as tbl_3  on tbl_1.subtask_id = tbl_3.subtask_id left join ( select distinct(subtask_id) from [spms].[dbo].[spms_tblNewsfeed_ItemUpvotes]  where eid = " + eid + " ) as tbl_4 on tbl_1.subtask_id = tbl_4.subtask_id left join ( select a.*,b.EmpFullName,b.eid as liker_eid from (select ROW_NUMBER() Over ( partition by subtask_id order by id desc ) rn ,subtask_id,eid from  [spms].[dbo].[spms_tblNewsfeed_ItemUpvotes]   ) as a inner join  [pmis].[dbo].[m_vwGetAllEmployee_Minified]  as b on a.eid = b.eid where a.rn = 1)  as tbl_5 on tbl_1.subtask_id = tbl_5.subtask_id   where Department = " + officeid + " order by timeStamp desc";
+            qry = @"SELECT TOP 50
+    s.id AS subtask_id,
+    img.image,
+    s.updated_on AS timeStamp,
+    s.id,
+    s.subtask_description AS status,
+    'https://pgas.ph/hris/Content/images/photos/' + CAST(s.eid AS nvarchar(20)) + '.png' AS profilePic,
+    e.EmpFullName AS name,
+    e.Department,
+    ISNULL(lc.likes, 0) AS likes,
+    CASE WHEN EXISTS (
+        SELECT 1 FROM [spms].[dbo].[spms_tblNewsfeed_ItemUpvotes] u
+        WHERE u.subtask_id = s.id AND u.eid = @eid
+    ) THEN 1 ELSE 0 END AS isLiked,
+    ll.EmpFullName AS liker,
+    ll.liker_eid
+FROM [spms].[dbo].[spms_tblSubTask] AS s
+INNER JOIN [pmis].[dbo].[m_vwGetAllEmployee_Minified] AS e
+    ON e.eid = s.eid
+CROSS APPLY (
+    SELECT STUFF((
+        SELECT ',' + CONCAT('https://pgas.ph/spmsattachment/DAR/', p.eid, '/', p.attachment, '.', p.attachment_extension)
+        FROM [spms].[dbo].[spms_tblSubTaskProof] AS p
+        WHERE p.subtask_id = s.id
+        FOR XML PATH(''), TYPE
+    ).value('.', 'nvarchar(max)'), 1, 1, '') AS image
+) AS img
+LEFT JOIN (
+    SELECT subtask_id, COUNT(*) AS likes
+    FROM [spms].[dbo].[spms_tblNewsfeed_ItemUpvotes]
+    GROUP BY subtask_id
+) AS lc ON lc.subtask_id = s.id
+OUTER APPLY (
+    SELECT TOP 1 le.EmpFullName, le.eid AS liker_eid
+    FROM [spms].[dbo].[spms_tblNewsfeed_ItemUpvotes] AS u
+    INNER JOIN [pmis].[dbo].[m_vwGetAllEmployee_Minified] AS le ON le.eid = u.eid
+    WHERE u.subtask_id = s.id
+    ORDER BY u.id DESC
+) AS ll
+WHERE s.Privacy = 2
+  AND s.action_code = 1
+  AND img.image IS NOT NULL      -- only posts that have proof attachments (same as before)
+  AND e.Department = @officeid
+ORDER BY s.updated_on DESC;";
           //  }
            // else
            // {
@@ -1341,6 +1478,8 @@ namespace spms_ws
                 using (SqlConnection con = new SqlConnection(common.MyConnection()))
                 {
                     SqlCommand com = new SqlCommand(qry, con);
+                    com.Parameters.AddWithValue("@eid", eid);
+                    com.Parameters.AddWithValue("@officeid", officeid);
                     con.Open();
                     SqlDataReader reader = com.ExecuteReader();
                     dt.Load(reader);
